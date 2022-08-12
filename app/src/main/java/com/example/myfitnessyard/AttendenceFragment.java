@@ -1,64 +1,144 @@
 package com.example.myfitnessyard;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AttendenceFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+import com.example.myfitnessyard.databinding.AttendenceFragmentBinding;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
+
+
 public class AttendenceFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+
 
     public AttendenceFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddUserFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AttendenceFragment newInstance(String param1, String param2) {
-        AttendenceFragment fragment = new AttendenceFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
+
+    AttendenceFragmentBinding binding;
+    Adapter adapter;
+    Toolbar toolbar;
+    private MenuItem menuItem;
+    private SearchView searchView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.attendence_fragment, container, false);
+
+
+
+        binding = AttendenceFragmentBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+
+        toolbar = view.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setTitle("Fitness Yard");
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()
+                ,LinearLayoutManager.VERTICAL,false));
+        binding.recyclerView.setHasFixedSize(true);
+
+        FirebaseRecyclerOptions<Users> options =
+                new FirebaseRecyclerOptions.Builder<Users>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference()
+                                .child("users"), Users.class)
+                        .build();
+        adapter = new Adapter(options);
+        binding.recyclerView.setAdapter(adapter);
+
+
+
+
+
+        return view;
+
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_item,menu);
+        menuItem = menu.findItem(R.id.searchId);
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setIconified(true);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mySearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                mySearch(query);
+                return true;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void mySearch(String query) {
+        FirebaseRecyclerOptions<Users> options =
+                new FirebaseRecyclerOptions.Builder<Users>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference()
+                                .child("users").orderByChild("uNo")
+                                .startAt(query).endAt(query+"\uf8ff"), Users.class)
+                        .build();
+        adapter = new Adapter(options);
+        adapter.startListening();
+        binding.recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+
+
+    //    @Override
+//    public void onResume() {
+//        super.onStop();
+//        adapter.stopListening();
+//    }
 }
