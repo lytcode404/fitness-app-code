@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "761206517984",
+    "project_id": "ajeet-bhia-gym",
+    "storage_bucket": "ajeet-bhia-gym.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761206517984:android:7b602ea0e8ea17bc832085",
+        "android_client_info": {
+          "package_name": "com.example.myfitnessyard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761206517984-8gkqcftq9lblp20f5kfp9hul5eqatr3e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myfitnessyard",
+            "certificate_hash": "6e03d29558a7975a87870b291fade6fb497a997c"
+          }
+        },
+        {
+          "client_id": "761206517984-nuchmaeh53mgjbp4kmju7k9820r0ept1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtfIcFzp_aJRh9FIlCvrRttzfXSHwK9Gc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761206517984-nuchmaeh53mgjbp4kmju7k9820r0ept1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
