@@ -2,6 +2,7 @@ package com.example.myfitnessyard;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,9 @@ public class AttendenceFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
 
-
+        binding.fab.setOnClickListener(view1 -> {
+            startActivity(new Intent(view.getContext(), CreateUserActivity.class));
+        });
 
 
         return view;

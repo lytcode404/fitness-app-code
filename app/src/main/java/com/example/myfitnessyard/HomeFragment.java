@@ -2,6 +2,7 @@ package com.example.myfitnessyard;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -69,8 +70,13 @@ public class HomeFragment extends Fragment {
         adapter = new Adapter(options);
         binding.recyclerView.setAdapter(adapter);
 
+//        binding.fab.setOnClickListener(view -> {
+//            startActivity(new Intent(MainActivity.this, CreateUserActivity.class));
+//        });
 
-
+        binding.fab.setOnClickListener(view1 -> {
+            startActivity(new Intent(view.getContext(), CreateUserActivity.class));
+        });
 
 
         return view;

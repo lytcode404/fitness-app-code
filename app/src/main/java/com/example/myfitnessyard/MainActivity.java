@@ -38,15 +38,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
         
-//        binding.fab.setOnClickListener(view -> {
-//            startActivity(new Intent(MainActivity.this, CreateUserActivity.class));
-//        });
+
 //
-//        binding.settings.setOnClickListener(view -> {
-//            Toast toast = Toast.makeText(MainActivity.this, "Under Deveolopment!!!", Toast.LENGTH_LONG);
-//            toast.setGravity(Gravity.CENTER, 0, 0);
-//            toast.show();
-//        });
+
         
 }
         
