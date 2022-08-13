@@ -20,7 +20,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -109,6 +112,37 @@ public class CreateUserActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     String imageUrl = uri.toString();
                                     Users users = new Users(imageUrl,uName, uNo, feeStatus, fee, plan, date);
+                                    if(feeStatus.equals("Paid")){
+                                        database.getReference().child("paid").child(uNo+uName)
+                                                .setValue(users);
+                                    }else{
+                                        database.getReference().child("pending").child(uNo+uName)
+                                                .setValue(users);
+
+                                    }
+
+                                    database.getReference().child("revenue")
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String fund = snapshot.getValue(String.class);
+
+                                            int money = Integer.parseInt(fund);
+                                            int money2 = Integer.parseInt(binding.fees.getText().toString());
+
+                                            int netMoney = money+money2;
+
+                                            database.getReference().child("revenue")
+                                                    .setValue(Integer.toString(netMoney));
+
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
                                     database.getReference().child("users").child(uNo+uName)
                                             .setValue(users)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -138,6 +172,28 @@ public class CreateUserActivity extends AppCompatActivity {
             }else {
                 String imageUrl = "No Image";
                 Users users = new Users(imageUrl,uName, uNo, feeStatus, fee, plan, date);
+                database.getReference().child("revenue")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String fund = snapshot.getValue(String.class);
+
+                                int money = Integer.parseInt(fund);
+                                int money2 = Integer.parseInt(binding.fees.getText().toString());
+
+                                int netMoney = money+money2;
+
+                                database.getReference().child("revenue")
+                                        .setValue(Integer.toString(netMoney));
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                 database.getReference().child("users").child(uNo+uName)
                         .setValue(users)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

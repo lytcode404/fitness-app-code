@@ -116,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:background="@drawable/text_back"
-                        android:backgroundTint="#8A1818"
+                        android:backgroundTint="@color/green"
                         android:gravity="start"
                         android:padding="4dp"
                         android:text="paid"

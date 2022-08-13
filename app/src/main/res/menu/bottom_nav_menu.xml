@@ -10,13 +10,13 @@
     <item
         android:id="@+id/attendence"
         android:icon="@drawable/ic_baseline_calendar_month_24"
-        android:title="attendence"
+        android:title="Pending"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/user"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="users"
+        android:title="Paid"
         app:showAsAction="always"
          />
 

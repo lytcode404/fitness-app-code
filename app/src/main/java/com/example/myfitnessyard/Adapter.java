@@ -8,11 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder> {
 
@@ -31,6 +33,25 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
         holder.fee.setText(model.getFee());
         holder.plan.setText(model.getPlan());
         holder.date.setText(model.getDate());
+
+        String child = model.getuNo() + model.getuName();
+
+
+        holder.feeStatus.setOnClickListener(view -> {
+            if(model.getFeeStatus().equals("paid") || model.getFeeStatus().equals("Paid")){
+                FirebaseDatabase.getInstance().getReference().child("users")
+                        .child(child).child("feeStatus").setValue("Pending");
+                FirebaseDatabase.getInstance().getReference()
+                        .child("paid").child(child).child("feeStatus").setValue("Pending");
+
+            }else{
+                FirebaseDatabase.getInstance().getReference().child("users")
+                        .child(child).child("feeStatus").setValue("Paid");
+                FirebaseDatabase.getInstance().getReference()
+                        .child("Pending").child(child).child("feeStatus").setValue("Paid");
+            }
+
+        });
     }
 
     @NonNull

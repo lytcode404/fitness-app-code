@@ -57,7 +57,7 @@ public class AttendenceFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Fitness Yard");
+        activity.getSupportActionBar().setTitle("");
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()
                 ,LinearLayoutManager.VERTICAL,false));
@@ -66,7 +66,7 @@ public class AttendenceFragment extends Fragment {
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
                         .setQuery(FirebaseDatabase.getInstance().getReference()
-                                .child("users"), Users.class)
+                                .child("pending"), Users.class)
                         .build();
         adapter = new Adapter(options);
         binding.recyclerView.setAdapter(adapter);
@@ -117,7 +117,7 @@ public class AttendenceFragment extends Fragment {
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
                         .setQuery(FirebaseDatabase.getInstance().getReference()
-                                .child("users").orderByChild("uNo")
+                                .child("pending").orderByChild("uNo")
                                 .startAt(query).endAt(query+"\uf8ff"), Users.class)
                         .build();
         adapter = new Adapter(options);

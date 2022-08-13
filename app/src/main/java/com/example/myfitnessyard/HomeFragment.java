@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -20,10 +21,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.myfitnessyard.databinding.FragmentHomeBinding;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class HomeFragment extends Fragment {
@@ -56,7 +65,54 @@ public class HomeFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Fitness Yard");
+        activity.getSupportActionBar().setTitle("");
+        final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+        View mView = getLayoutInflater().inflate(R.layout.fund_box, null);
+        final EditText fundVal = (EditText)mView.findViewById(R.id.fundValue);
+        Button btn_cancel = (Button)mView.findViewById(R.id.cancel);
+        Button btn_submit = (Button)mView.findViewById(R.id.submitRev);
+        alert.setView(mView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(true);
+
+
+        binding.funds.setOnClickListener(view1 -> {
+            fundVal.setText(binding.funds.getText().toString());
+            alertDialog.show();
+        });
+
+        btn_cancel.setOnClickListener(view1 -> {
+            alertDialog.dismiss();
+        });
+
+        btn_submit.setOnClickListener(view1 -> {
+
+
+            FirebaseDatabase.getInstance().getReference()
+                    .child("revenue").setValue(fundVal.getText().toString());
+            Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
+            alertDialog.dismiss();
+
+        });
+
+
+        FirebaseDatabase.getInstance().getReference().child("revenue")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        String fund = snapshot.getValue(String.class);
+                        binding.funds.setText(fund);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()
                 ,LinearLayoutManager.VERTICAL,false));
@@ -70,9 +126,7 @@ public class HomeFragment extends Fragment {
         adapter = new Adapter(options);
         binding.recyclerView.setAdapter(adapter);
 
-//        binding.fab.setOnClickListener(view -> {
-//            startActivity(new Intent(MainActivity.this, CreateUserActivity.class));
-//        });
+
 
         binding.fab.setOnClickListener(view1 -> {
             startActivity(new Intent(view.getContext(), CreateUserActivity.class));
@@ -94,6 +148,7 @@ public class HomeFragment extends Fragment {
 
         inflater.inflate(R.menu.menu_item,menu);
         menuItem = menu.findItem(R.id.searchId);
+
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setIconified(true);
 
