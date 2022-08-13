@@ -115,34 +115,36 @@ public class CreateUserActivity extends AppCompatActivity {
                                     if(feeStatus.equals("Paid")){
                                         database.getReference().child("paid").child(uNo+uName)
                                                 .setValue(users);
+
+                                        database.getReference().child("revenue")
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        String fund = snapshot.getValue(String.class);
+
+                                                        int money = Integer.parseInt(fund);
+                                                        int money2 = Integer.parseInt(binding.fees.getText().toString());
+
+                                                        int netMoney = money+money2;
+
+                                                        database.getReference().child("revenue")
+                                                                .setValue(Integer.toString(netMoney));
+
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
                                     }else{
                                         database.getReference().child("pending").child(uNo+uName)
                                                 .setValue(users);
 
                                     }
 
-                                    database.getReference().child("revenue")
-                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String fund = snapshot.getValue(String.class);
 
-                                            int money = Integer.parseInt(fund);
-                                            int money2 = Integer.parseInt(binding.fees.getText().toString());
-
-                                            int netMoney = money+money2;
-
-                                            database.getReference().child("revenue")
-                                                    .setValue(Integer.toString(netMoney));
-
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
                                     database.getReference().child("users").child(uNo+uName)
                                             .setValue(users)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
