@@ -1,8 +1,12 @@
 package com.example.myfitnessyard.Adapters;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +21,8 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +42,7 @@ import java.util.Map;
 
 public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPending.myViewHolder> {
 
-
+    int REQUEST_CALL = 1;
 
     public AdapterPending(@NonNull FirebaseRecyclerOptions<Users> options) {
         super(options);
@@ -161,9 +167,41 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
 
 
 
+
+        });
+
+        holder.wpBtn.setOnClickListener(view -> {
+            String ph = "+91"+model.getuPhno().trim();
+            String msg = "submit your fee: "+model.getFee();
+            Intent i = new Intent(Intent.ACTION_VIEW
+                    , Uri.parse("https://api.whatsapp.com/send?phone="+ph+"&text"+msg));
+
+            if (i.resolveActivity(view.getContext().getPackageManager())
+                    == null) {
+                Toast.makeText(view.getContext()
+                        , "Please install whatsapp first.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            view.getContext().startActivity(i);
+        });
+
+        holder.callBtn.setOnClickListener(view -> {
+            String dial = "tel:"+model.getuPhno().trim();
+            if (ContextCompat.checkSelfPermission(view.getContext()
+                    , Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions((Activity) view.getContext(),
+                        new String[] {Manifest.permission.CALL_PHONE},REQUEST_CALL);
+            }else {
+                view.getContext().startActivity(new Intent(Intent.ACTION_CALL
+                        , Uri.parse(dial)));
+            }
         });
 
     }
+
+
+
+
 
 
 
