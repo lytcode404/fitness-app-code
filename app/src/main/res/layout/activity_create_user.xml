@@ -27,7 +27,7 @@
 
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/tvText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="18dp"
@@ -76,6 +76,16 @@
                 android:inputType="number"
                 android:minHeight="48dp" />
 
+            <EditText
+                android:id="@+id/fees"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:ems="10"
+                android:hint="type user's fees"
+                android:inputType="number"
+                android:minHeight="48dp" />
+
             <RadioGroup
                 android:id="@+id/feeStatus"
                 android:layout_width="match_parent"
@@ -106,16 +116,6 @@
                     android:text="Paid" />
 
             </RadioGroup>
-
-            <EditText
-                android:id="@+id/fees"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:ems="10"
-                android:hint="type user's fees"
-                android:inputType="number"
-                android:minHeight="48dp" />
 
             <RadioGroup
                 android:id="@+id/Plan"

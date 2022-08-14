@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myfitnessyard.Activities.CreateUserActivity;
@@ -72,6 +73,22 @@ public class HomeFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setTitle("");
+
+        FirebaseDatabase.getInstance().getReference().child("revenue")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        String fund = snapshot.getValue(String.class);
+                        binding.funds.setText(fund);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
         final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
         View mView = getLayoutInflater().inflate(R.layout.fund_box, null);
         final EditText fundVal = (EditText)mView.findViewById(R.id.fundValue);
@@ -102,20 +119,7 @@ public class HomeFragment extends Fragment {
         });
 
 
-        FirebaseDatabase.getInstance().getReference().child("revenue")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        String fund = snapshot.getValue(String.class);
-                        binding.funds.setText(fund);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
 
 
 
@@ -158,11 +162,15 @@ public class HomeFragment extends Fragment {
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setIconified(true);
         searchView.setMaxWidth(Integer.MAX_VALUE);
-//        searchView.setBackgroundResource(R.color.white);
         ImageView icon = searchView.findViewById(com.google.android.material.R.id.search_button);
         Drawable whiteIcon = icon.getDrawable();
-        whiteIcon.setTint(Color.WHITE); //Whatever color you want it to be
+        whiteIcon.setTint(Color.WHITE);
         icon.setImageDrawable(whiteIcon);
+
+
+        EditText searchEditText = searchView.findViewById(com.google.android.material.R.id.search_src_text);
+        searchEditText.setTextColor(getResources().getColor(R.color.white));
+        searchEditText.setHintTextColor(getResources().getColor(R.color.white));
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));

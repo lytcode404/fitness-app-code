@@ -7,12 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myfitnessyard.Models.Users;
 import com.example.myfitnessyard.R;
 import com.example.myfitnessyard.databinding.ActivityCreateUserBinding;
@@ -69,6 +71,10 @@ public class CreateUserActivity extends AppCompatActivity {
             launcher.launch("image/*");
 
         });
+
+
+
+
 
         binding.submit.setOnClickListener(view -> {
             String   uName, uNo,uPhno, feeStatus, fee, plan, date;

@@ -4,6 +4,7 @@
         android:id="@+id/menu_edit"
         android:title="Edit"/>
 
-    <item android:title="Remove"
-        android:id="@+id/menu_remove"/>
+    <item
+        android:id="@+id/menu_archive"
+        android:title="Archive" />
 </menu>

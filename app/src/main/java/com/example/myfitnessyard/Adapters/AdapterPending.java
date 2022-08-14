@@ -1,13 +1,21 @@
 package com.example.myfitnessyard.Adapters;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,15 +24,26 @@ import com.example.myfitnessyard.Models.Users;
 import com.example.myfitnessyard.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.ViewHolder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPending.myViewHolder> {
+
+
 
     public AdapterPending(@NonNull FirebaseRecyclerOptions<Users> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull myViewHolder holder, int position, @NonNull Users model) {
+    protected void onBindViewHolder(@NonNull myViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Users model) {
         Glide.with(holder.profileImg.getContext()).load(model.getImageUrl())
                 .placeholder(R.drawable.ic_baseline_person_24)
                 .into(holder.profileImg);
@@ -32,38 +51,128 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
         holder.uNo.setText(model.getuNo());
 
         holder.txt_option.setOnClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.txt_option);
-            popupMenu.inflate(R.menu.options_menu);
-            popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()){
-                    case R.id.menu_edit:
 
-                        Toast.makeText(view.getContext()
-                                , "menu item edit clicked", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.menu_remove:
-                        Toast.makeText(view.getContext()
-                                , "menu item remove clicked", Toast.LENGTH_SHORT).show();
-                        break;
-
-
-                }
-                return false;
-            });
+            PopupMenu popupMenu = new PopupMenu(view.getContext(),view);
+            popupMenu.getMenuInflater().inflate(R.menu.options_menu_pending,popupMenu.getMenu());
             popupMenu.show();
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()){
+                        case R.id.menu_edit:
+                            final DialogPlus dialogPlus = DialogPlus
+                                    .newDialog(holder.txt_option.getContext())
+                                    .setContentHolder(new ViewHolder(R.layout.dialog_content))
+                                    .setExpanded(true,900)
+                                    .create();
+                            View mView = dialogPlus.getHolderView();
+
+
+                            EditText uName = mView.findViewById(R.id.uName);
+                            EditText uNo = mView.findViewById(R.id.uNo);
+                            EditText uPhno = mView.findViewById(R.id.uPhnumber);
+                            EditText fee = mView.findViewById(R.id.fees);
+                            EditText date = mView.findViewById(R.id.joiningDate);
+
+                            Button update = mView.findViewById(R.id.update);
+
+
+
+                            uName.setText(model.getuName());
+                            uNo.setText(model.getuNo());
+                            uPhno.setText(model.getuPhno());
+                            fee.setText(model.getFee());
+                            date.setText(model.getDate());
+
+
+                            dialogPlus.show();
+
+                            update.setOnClickListener(view1 -> {
+
+
+
+                                Map<String,Object> map = new HashMap<>();
+                                map.put("uName",uName.getText().toString());
+                                map.put("uNo",uNo.getText().toString());
+                                map.put("uPhno",uPhno.getText().toString());
+                                map.put("fee",fee.getText().toString());
+                                map.put("date",date.getText().toString());
+
+
+                                FirebaseDatabase.getInstance().getReference().child("users")
+                                        .child(model.getuNo()+model.getuName())
+                                        .updateChildren(map);
+
+                                FirebaseDatabase.getInstance().getReference().child("pending")
+                                        .child(getRef(position).getKey())
+                                        .updateChildren(map)
+                                        .addOnSuccessListener(runnable -> {
+                                            Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
+                                            dialogPlus.dismiss();
+                                        }).addOnFailureListener(runnable -> {
+                                            Toast.makeText(view.getContext(), "Failed to  update", Toast.LENGTH_SHORT).show();
+                                            dialogPlus.dismiss();
+                                        });
+
+
+                            });
+
+
+
+                            break;
+                        case R.id.menu_pay:
+
+                            FirebaseDatabase.getInstance().getReference().child("paid")
+                                    .child(model.getuNo()+model.getuName()).setValue(model);
+
+                            FirebaseDatabase.getInstance().getReference().child("revenue")
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                            String fund = snapshot.getValue(String.class);
+
+                                            int money = Integer.parseInt(fund);
+                                            int money2 = Integer.parseInt(model.getFee().toString());
+
+                                            int netMoney = money+money2;
+
+                                            FirebaseDatabase.getInstance().getReference().child("revenue")
+                                                    .setValue(Integer.toString(netMoney));
+
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+
+                            FirebaseDatabase.getInstance().getReference().child("pending")
+                                    .child(getRef(position).getKey()).removeValue();
+                            Toast.makeText(view.getContext(), "Successfull", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+
 
         });
 
-
-
-
     }
+
+
 
     @NonNull
     @Override
     public myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sample_pending
                 , parent , false);
+
         return new myViewHolder(view);
     }
 
