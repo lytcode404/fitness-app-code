@@ -1,10 +1,12 @@
-package com.example.myfitnessyard;
+package com.example.myfitnessyard.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
+
+import com.example.myfitnessyard.R;
 
 public class SplashActivity extends AppCompatActivity {
 

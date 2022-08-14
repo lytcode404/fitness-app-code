@@ -1,15 +1,16 @@
-package com.example.myfitnessyard;
+package com.example.myfitnessyard.Models;
 
 public class Users {
-    String imageUrl, uName, uNo, feeStatus, fee, plan, date;
+    String imageUrl, uName, uNo,uPhno, feeStatus, fee, plan, date;
 
     public Users() {
     }
 
-    public Users(String imageUrl, String uName, String uNo, String feeStatus, String fee, String plan, String date) {
+    public Users(String imageUrl, String uName, String uNo, String uPhno, String feeStatus, String fee, String plan, String date) {
         this.imageUrl = imageUrl;
         this.uName = uName;
         this.uNo = uNo;
+        this.uPhno = uPhno;
         this.feeStatus = feeStatus;
         this.fee = fee;
         this.plan = plan;
@@ -38,6 +39,14 @@ public class Users {
 
     public void setuNo(String uNo) {
         this.uNo = uNo;
+    }
+
+    public String getuPhno() {
+        return uPhno;
+    }
+
+    public void setuPhno(String uPhno) {
+        this.uPhno = uPhno;
     }
 
     public String getFeeStatus() {

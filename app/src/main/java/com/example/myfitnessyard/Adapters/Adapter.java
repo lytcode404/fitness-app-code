@@ -1,20 +1,21 @@
-package com.example.myfitnessyard;
+package com.example.myfitnessyard.Adapters;
 
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.myfitnessyard.R;
+import com.example.myfitnessyard.Models.Users;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder> {
 
@@ -29,29 +30,32 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
                 .into(holder.profileImg);
         holder.uName.setText(model.getuName());
         holder.uNo.setText(model.getuNo());
-        holder.feeStatus.setText(model.getFeeStatus());
-        holder.fee.setText(model.getFee());
-        holder.plan.setText(model.getPlan());
-        holder.date.setText(model.getDate());
 
-        String child = model.getuNo() + model.getuName();
+        holder.txt_option.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.txt_option);
+            popupMenu.inflate(R.menu.options_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()){
+                    case R.id.menu_edit:
+
+                        Toast.makeText(view.getContext()
+                                , "menu item edit clicked", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.menu_remove:
+                        Toast.makeText(view.getContext()
+                                , "menu item remove clicked", Toast.LENGTH_SHORT).show();
+                        break;
 
 
-        holder.feeStatus.setOnClickListener(view -> {
-            if(model.getFeeStatus().equals("paid") || model.getFeeStatus().equals("Paid")){
-                FirebaseDatabase.getInstance().getReference().child("users")
-                        .child(child).child("feeStatus").setValue("Pending");
-                FirebaseDatabase.getInstance().getReference()
-                        .child("paid").child(child).child("feeStatus").setValue("Pending");
-
-            }else{
-                FirebaseDatabase.getInstance().getReference().child("users")
-                        .child(child).child("feeStatus").setValue("Paid");
-                FirebaseDatabase.getInstance().getReference()
-                        .child("Pending").child(child).child("feeStatus").setValue("Paid");
-            }
+                }
+                return false;
+            });
+            popupMenu.show();
 
         });
+
+
+
     }
 
     @NonNull
@@ -62,23 +66,20 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
-        ImageView profileImg;
+        ImageView profileImg,callBtn,wpBtn;
         TextView uName;
         TextView uNo;
-        TextView feeStatus;
-        TextView fee;
-        TextView plan;
-        TextView date;
-//        String imageUrl, uName, uNo, feeStatus, fee, plan, date;
+        TextView txt_option;
+
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             profileImg = itemView.findViewById(R.id.profileImage);
             uName = itemView.findViewById(R.id.uName);
             uNo = itemView.findViewById(R.id.uNo);
-            feeStatus = itemView.findViewById(R.id.feeStatus);
-            fee = itemView.findViewById(R.id.fees);
-            plan = itemView.findViewById(R.id.plan);
-            date = itemView.findViewById(R.id.date);
+            txt_option = itemView.findViewById(R.id.txt_option);
+            callBtn = itemView.findViewById(R.id.callBtn);
+            wpBtn = itemView.findViewById(R.id.wpBtn);
+
 
         }
     }

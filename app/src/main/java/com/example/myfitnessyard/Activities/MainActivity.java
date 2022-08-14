@@ -1,15 +1,16 @@
-package com.example.myfitnessyard;
+package com.example.myfitnessyard.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.widget.Toast;
 
+import com.example.myfitnessyard.Fragments.PendingFragment;
+import com.example.myfitnessyard.Fragments.HomeFragment;
+import com.example.myfitnessyard.R;
+import com.example.myfitnessyard.Fragments.PaidFragment;
 import com.example.myfitnessyard.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new HomeFragment());
                     break;
                 case R.id.attendence:
-                    replaceFragment(new AttendenceFragment());
+                    replaceFragment(new PendingFragment());
                     break;
                 case R.id.user:
-                    replaceFragment(new UserFragment());
+                    replaceFragment(new PaidFragment());
                     break;
 
             }

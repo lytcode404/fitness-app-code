@@ -6,5 +6,10 @@
         android:icon="@drawable/ic_baseline_search_24"
         android:title="Search"
         app:showAsAction="always"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tint="@color/white"
+
+        android:maxWidth="10000dp"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 </menu>

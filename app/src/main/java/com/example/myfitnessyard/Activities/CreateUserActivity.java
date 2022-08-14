@@ -1,20 +1,20 @@
-package com.example.myfitnessyard;
+package com.example.myfitnessyard.Activities;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.example.myfitnessyard.Models.Users;
+import com.example.myfitnessyard.R;
 import com.example.myfitnessyard.databinding.ActivityCreateUserBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,8 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.util.Locale;
 
 public class CreateUserActivity extends AppCompatActivity {
     ActivityCreateUserBinding binding;
@@ -73,7 +71,7 @@ public class CreateUserActivity extends AppCompatActivity {
         });
 
         binding.submit.setOnClickListener(view -> {
-            String   uName, uNo, feeStatus, fee, plan, date;
+            String   uName, uNo,uPhno, feeStatus, fee, plan, date;
 
 
             uName = binding.uName.getText().toString().trim();
@@ -83,6 +81,7 @@ public class CreateUserActivity extends AppCompatActivity {
             plan = gymPlan.getText().toString();
 
             date = binding.joiningDate.getText().toString();
+            uPhno = binding.uPhnumber.getText().toString();
 
 
             if (uName.isEmpty() ){
@@ -97,10 +96,14 @@ public class CreateUserActivity extends AppCompatActivity {
             }if (date.isEmpty()){
                 binding.joiningDate.setError("Please fill the field!");
                 return;
+            }if (uPhno.isEmpty()){
+                binding.joiningDate.setError("Please fill the field!");
+                return;
             }
-            dialog.show();
+
 
             if(selectedImage != null){
+                dialog.show();
                 StorageReference reference = storage.getReference().child("profiles").child(uNo+uName);
                 reference.putFile(selectedImage)
                         .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -111,7 +114,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String imageUrl = uri.toString();
-                                    Users users = new Users(imageUrl,uName, uNo, feeStatus, fee, plan, date);
+                                    Users users = new Users(imageUrl,uName, uNo,uPhno, feeStatus, fee, plan, date);
                                     if(feeStatus.equals("Paid")){
                                         database.getReference().child("paid").child(uNo+uName)
                                                 .setValue(users);
@@ -154,6 +157,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                                     binding.uNo.setText("");
                                                     binding.fees.setText("");
                                                     binding.joiningDate.setText("");
+                                                    binding.profileImage.setImageResource(R.drawable.ic_baseline_person_24);
                                                     dialog.cancel();
                                                     Toast.makeText(CreateUserActivity.this, "task successful", Toast.LENGTH_SHORT).show();
                                                 }
@@ -171,51 +175,9 @@ public class CreateUserActivity extends AppCompatActivity {
                     }
                 });
 
-            }else {
-                String imageUrl = "No Image";
-                Users users = new Users(imageUrl,uName, uNo, feeStatus, fee, plan, date);
-                database.getReference().child("revenue")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                String fund = snapshot.getValue(String.class);
-
-                                int money = Integer.parseInt(fund);
-                                int money2 = Integer.parseInt(binding.fees.getText().toString());
-
-                                int netMoney = money+money2;
-
-                                database.getReference().child("revenue")
-                                        .setValue(Integer.toString(netMoney));
-
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-                database.getReference().child("users").child(uNo+uName)
-                        .setValue(users)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                binding.uName.setText("");
-                                binding.uNo.setText("");
-                                binding.fees.setText("");
-                                binding.joiningDate.setText("");
-                                dialog.cancel();
-                                Toast.makeText(CreateUserActivity.this, "task successful", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                dialog.cancel();
-                                Toast.makeText(CreateUserActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-
-                            }
-                        });
+            }else{
+                Toast.makeText(CreateUserActivity.this,
+                        "Please select the image", Toast.LENGTH_SHORT).show();
             }
 
 
