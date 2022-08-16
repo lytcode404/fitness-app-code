@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.example.myfitnessyard.Activities.MainActivity;
 import com.example.myfitnessyard.Adapters.Adapter;
 import com.example.myfitnessyard.Activities.CreateUserActivity;
 import com.example.myfitnessyard.Adapters.AdapterPending;
@@ -58,7 +59,7 @@ public class PendingFragment extends Fragment {
 
     PendingFragmentBinding binding;
     AdapterPending adapter;
-    Toolbar toolbar;
+
     private MenuItem menuItem;
     private SearchView searchView;
     @Override
@@ -70,9 +71,9 @@ public class PendingFragment extends Fragment {
         binding = PendingFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        toolbar = view.findViewById(R.id.toolbar);
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
+        activity.setSupportActionBar(MainActivity.toolbar);
         activity.getSupportActionBar().setTitle("");
 
         FirebaseDatabase.getInstance().getReference().child("revenue")
@@ -81,7 +82,7 @@ public class PendingFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         String fund = snapshot.getValue(String.class);
-                        binding.funds.setText(fund);
+                        MainActivity.funds.setText(fund);
                     }
 
                     @Override
@@ -90,34 +91,8 @@ public class PendingFragment extends Fragment {
                     }
                 });
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
-        View mView = getLayoutInflater().inflate(R.layout.fund_box, null);
-        final EditText fundVal = (EditText)mView.findViewById(R.id.fundValue);
-        Button btn_cancel = (Button)mView.findViewById(R.id.cancel);
-        Button btn_submit = (Button)mView.findViewById(R.id.submitRev);
-        alert.setView(mView);
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.setCanceledOnTouchOutside(true);
 
 
-        binding.funds.setOnClickListener(view1 -> {
-            fundVal.setText(binding.funds.getText().toString());
-            alertDialog.show();
-        });
-
-        btn_cancel.setOnClickListener(view1 -> {
-            alertDialog.dismiss();
-        });
-
-        btn_submit.setOnClickListener(view1 -> {
-
-
-            FirebaseDatabase.getInstance().getReference()
-                    .child("revenue").setValue(fundVal.getText().toString());
-            Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
-            alertDialog.dismiss();
-
-        });
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()
                 ,LinearLayoutManager.VERTICAL,false));
@@ -132,7 +107,7 @@ public class PendingFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
 
-        binding.fab.setOnClickListener(view1 -> {
+        MainActivity.fab.setOnClickListener(view1 -> {
             startActivity(new Intent(view.getContext(), CreateUserActivity.class));
         });
 

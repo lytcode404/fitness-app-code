@@ -1,5 +1,6 @@
 package com.example.myfitnessyard.Fragments;
 
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,18 +23,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.myfitnessyard.Activities.CreateUserActivity;
+import com.example.myfitnessyard.Activities.MainActivity;
 import com.example.myfitnessyard.Adapters.Adapter;
 import com.example.myfitnessyard.Models.Users;
 import com.example.myfitnessyard.R;
 import com.example.myfitnessyard.databinding.FragmentHomeBinding;
-import com.example.myfitnessyard.databinding.SamplePendingBinding;
+
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -57,7 +61,7 @@ public class HomeFragment extends Fragment {
 
     FragmentHomeBinding binding;
     Adapter adapter;
-    Toolbar toolbar;
+
     private MenuItem menuItem;
     private SearchView searchView;
     @Override
@@ -69,10 +73,13 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        toolbar = view.findViewById(R.id.toolbar);
+
+
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
+        activity.setSupportActionBar(MainActivity.toolbar);
         activity.getSupportActionBar().setTitle("");
+
 
         FirebaseDatabase.getInstance().getReference().child("revenue")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -80,7 +87,7 @@ public class HomeFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         String fund = snapshot.getValue(String.class);
-                        binding.funds.setText(fund);
+                        MainActivity.funds.setText(fund);
                     }
 
                     @Override
@@ -89,44 +96,12 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
-        View mView = getLayoutInflater().inflate(R.layout.fund_box, null);
-        final EditText fundVal = (EditText)mView.findViewById(R.id.fundValue);
-        Button btn_cancel = (Button)mView.findViewById(R.id.cancel);
-        Button btn_submit = (Button)mView.findViewById(R.id.submitRev);
-        alert.setView(mView);
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.setCanceledOnTouchOutside(true);
-
-
-        binding.funds.setOnClickListener(view1 -> {
-            fundVal.setText(binding.funds.getText().toString());
-            alertDialog.show();
-        });
-
-        btn_cancel.setOnClickListener(view1 -> {
-            alertDialog.dismiss();
-        });
-
-        btn_submit.setOnClickListener(view1 -> {
-
-
-            FirebaseDatabase.getInstance().getReference()
-                    .child("revenue").setValue(fundVal.getText().toString());
-            Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
-            alertDialog.dismiss();
-
-        });
-
-
-
-
-
 
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()
                 ,LinearLayoutManager.VERTICAL,false));
         binding.recyclerView.setHasFixedSize(true);
+
 
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
@@ -138,9 +113,8 @@ public class HomeFragment extends Fragment {
 
 
 
-        binding.fab.setOnClickListener(view1 -> {
-            startActivity(new Intent(view.getContext(), CreateUserActivity.class));
-        });
+
+
 
 
         return view;
@@ -205,20 +179,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        adapter.notifyDataSetChanged();
         adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
         adapter.stopListening();
     }
 
-
-
-    //    @Override
-//    public void onResume() {
-//        super.onStop();
-//        adapter.stopListening();
-//    }
 }

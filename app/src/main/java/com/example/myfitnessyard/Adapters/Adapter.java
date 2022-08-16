@@ -3,6 +3,8 @@ package com.example.myfitnessyard.Adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder> {
+    public static int lastPosition = -1;
 
     public Adapter(@NonNull FirebaseRecyclerOptions<Users> options) {
         super(options);
@@ -33,6 +36,7 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
 
     @Override
     protected void onBindViewHolder(@NonNull myViewHolder holder, int position, @NonNull Users model) {
+        setAnimation(holder.itemView, position);
         Glide.with(holder.profileImg.getContext()).load(model.getImageUrl())
                 .placeholder(R.drawable.ic_baseline_person_24)
                 .into(holder.profileImg);
@@ -49,7 +53,7 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
                         final DialogPlus dialogPlus = DialogPlus
                                 .newDialog(holder.txt_option.getContext())
                                 .setContentHolder(new ViewHolder(R.layout.dialog_content))
-                                .setExpanded(true,900)
+                                .setExpanded(true,1100)
                                 .create();
                         View mView = dialogPlus.getHolderView();
 
@@ -124,6 +128,17 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
 
     }
 
+    public static void setAnimation(View viewToAnimate, int position)
+    {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_in);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
+    }
+
     @NonNull
     @Override
     public myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -137,6 +152,7 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
         TextView uNo;
         TextView txt_option;
 
+
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             profileImg = itemView.findViewById(R.id.profileImage);
@@ -145,6 +161,8 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
             txt_option = itemView.findViewById(R.id.txt_option);
             callBtn = itemView.findViewById(R.id.callBtn);
             wpBtn = itemView.findViewById(R.id.wpBtn);
+
+
 
 
         }

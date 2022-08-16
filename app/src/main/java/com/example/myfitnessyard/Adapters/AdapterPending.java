@@ -1,5 +1,7 @@
 package com.example.myfitnessyard.Adapters;
 
+import static com.example.myfitnessyard.Adapters.Adapter.setAnimation;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -50,6 +52,7 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
 
     @Override
     protected void onBindViewHolder(@NonNull myViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Users model) {
+        setAnimation(holder.itemView, position);
         Glide.with(holder.profileImg.getContext()).load(model.getImageUrl())
                 .placeholder(R.drawable.ic_baseline_person_24)
                 .into(holder.profileImg);
