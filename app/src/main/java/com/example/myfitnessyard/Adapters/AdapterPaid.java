@@ -1,6 +1,5 @@
 package com.example.myfitnessyard.Adapters;
 
-import static com.example.myfitnessyard.Adapters.Adapter.setAnimation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +39,7 @@ public class AdapterPaid extends FirebaseRecyclerAdapter<Users, AdapterPaid.myVi
 
     @Override
     protected void onBindViewHolder(@NonNull myViewHolder holder, int position, @NonNull Users model) {
-        setAnimation(holder.itemView, position);
+
 
         Glide.with(holder.profileImg.getContext()).load(model.getImageUrl())
                 .placeholder(R.drawable.ic_baseline_person_24)
@@ -160,16 +159,7 @@ public class AdapterPaid extends FirebaseRecyclerAdapter<Users, AdapterPaid.myVi
 
     }
 
-//    private void setAnimation(View viewToAnimate, int position)
-//    {
-//        // If the bound view wasn't previously displayed on screen, it's animated
-//        if (position > Adapter.lastPosition)
-//        {
-//            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_in);
-//            viewToAnimate.startAnimation(animation);
-//            Adapter.lastPosition = position;
-//        }
-//    }
+
 
     @NonNull
     @Override

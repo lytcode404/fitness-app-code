@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder> {
-    public static int lastPosition = -1;
+
 
     public Adapter(@NonNull FirebaseRecyclerOptions<Users> options) {
         super(options);
@@ -36,7 +36,7 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
 
     @Override
     protected void onBindViewHolder(@NonNull myViewHolder holder, int position, @NonNull Users model) {
-        setAnimation(holder.itemView, position);
+
         Glide.with(holder.profileImg.getContext()).load(model.getImageUrl())
                 .placeholder(R.drawable.ic_baseline_person_24)
                 .into(holder.profileImg);
@@ -128,16 +128,7 @@ public class Adapter  extends FirebaseRecyclerAdapter<Users,Adapter.myViewHolder
 
     }
 
-    public static void setAnimation(View viewToAnimate, int position)
-    {
-        // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > lastPosition)
-        {
-            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_in);
-            viewToAnimate.startAnimation(animation);
-            lastPosition = position;
-        }
-    }
+
 
     @NonNull
     @Override

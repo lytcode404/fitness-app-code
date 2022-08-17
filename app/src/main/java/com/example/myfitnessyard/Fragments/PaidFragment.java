@@ -57,9 +57,7 @@ public class PaidFragment extends Fragment {
 
     FragmentPaidBinding binding;
     AdapterPaid adapter;
-//    Toolbar toolbar;
-    private MenuItem menuItem;
-    private SearchView searchView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,7 +67,6 @@ public class PaidFragment extends Fragment {
         binding = FragmentPaidBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-//        toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(MainActivity.toolbar);
         activity.getSupportActionBar().setTitle("");
@@ -122,8 +119,8 @@ public class PaidFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 
         inflater.inflate(R.menu.menu_item,menu);
-        menuItem = menu.findItem(R.id.searchId);
-        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        MenuItem menuItem = menu.findItem(R.id.searchId);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setIconified(true);
 
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -165,6 +162,8 @@ public class PaidFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        adapter.notifyDataSetChanged();
         adapter.startListening();
     }
 

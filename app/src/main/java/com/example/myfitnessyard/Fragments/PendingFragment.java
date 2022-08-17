@@ -169,6 +169,8 @@ public class PendingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        adapter.notifyDataSetChanged();
         adapter.startListening();
     }
 
