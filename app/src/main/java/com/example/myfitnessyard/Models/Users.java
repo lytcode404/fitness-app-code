@@ -1,6 +1,9 @@
 package com.example.myfitnessyard.Models;
 
-public class Users {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Users implements Serializable {
     String imageUrl, uName, uNo,uPhno, feeStatus, fee, plan, date;
 
     public Users() {

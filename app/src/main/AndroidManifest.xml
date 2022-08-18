@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.myfitnessyard">
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFitnessYard"
         tools:targetApi="31">
+        <activity
+            android:name=".Activities.EditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.CalendarActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.AttendenceActivity"
             android:exported="false" />
@@ -35,8 +44,5 @@
             </intent-filter>
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,116 +61,7 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
         holder.uNo.setText(model.getuNo());
 
         holder.txt_option.setOnClickListener(view -> {
-
-            PopupMenu popupMenu = new PopupMenu(view.getContext(),view);
-            popupMenu.getMenuInflater().inflate(R.menu.options_menu_pending,popupMenu.getMenu());
-            popupMenu.show();
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()){
-                        case R.id.menu_edit:
-                            final DialogPlus dialogPlus = DialogPlus
-                                    .newDialog(holder.txt_option.getContext())
-                                    .setContentHolder(new ViewHolder(R.layout.dialog_content))
-                                    .setExpanded(true,900)
-                                    .create();
-                            View mView = dialogPlus.getHolderView();
-
-
-                            EditText uName = mView.findViewById(R.id.uName);
-                            EditText uNo = mView.findViewById(R.id.uNo);
-                            EditText uPhno = mView.findViewById(R.id.uPhnumber);
-                            EditText fee = mView.findViewById(R.id.fees);
-                            EditText date = mView.findViewById(R.id.joiningDate);
-
-                            Button update = mView.findViewById(R.id.update);
-
-
-
-                            uName.setText(model.getuName());
-                            uNo.setText(model.getuNo());
-                            uPhno.setText(model.getuPhno());
-                            fee.setText(model.getFee());
-                            date.setText(model.getDate());
-
-
-                            dialogPlus.show();
-
-                            update.setOnClickListener(view1 -> {
-
-
-
-                                Map<String,Object> map = new HashMap<>();
-                                map.put("uName",uName.getText().toString());
-                                map.put("uNo",uNo.getText().toString());
-                                map.put("uPhno",uPhno.getText().toString());
-                                map.put("fee",fee.getText().toString());
-                                map.put("date",date.getText().toString());
-
-
-                                FirebaseDatabase.getInstance().getReference().child("users")
-                                        .child(model.getuNo()+model.getuName())
-                                        .updateChildren(map);
-
-                                FirebaseDatabase.getInstance().getReference().child("pending")
-                                        .child(getRef(position).getKey())
-                                        .updateChildren(map)
-                                        .addOnSuccessListener(runnable -> {
-                                            Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
-                                            dialogPlus.dismiss();
-                                        }).addOnFailureListener(runnable -> {
-                                            Toast.makeText(view.getContext(), "Failed to  update", Toast.LENGTH_SHORT).show();
-                                            dialogPlus.dismiss();
-                                        });
-
-
-                            });
-
-
-
-                            break;
-                        case R.id.menu_pay:
-
-                            FirebaseDatabase.getInstance().getReference().child("paid")
-                                    .child(model.getuNo()+model.getuName()).setValue(model);
-
-                            FirebaseDatabase.getInstance().getReference().child("revenue")
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                                            String fund = snapshot.getValue(String.class);
-
-                                            int money = Integer.parseInt(fund);
-                                            int money2 = Integer.parseInt(model.getFee().toString());
-
-                                            int netMoney = money+money2;
-
-                                            FirebaseDatabase.getInstance().getReference().child("revenue")
-                                                    .setValue(Integer.toString(netMoney));
-
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-
-                            FirebaseDatabase.getInstance().getReference().child("pending")
-                                    .child(getRef(position).getKey()).removeValue();
-                            Toast.makeText(view.getContext(), "Successfull", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                    return true;
-                }
-            });
-
-
-
+            popupmenu(view,holder,model,position);
 
         });
 
@@ -177,7 +69,7 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
             String ph = "+91"+model.getuPhno().trim();
             String msg = "submit your fee: "+model.getFee();
             Intent i = new Intent(Intent.ACTION_VIEW
-                    , Uri.parse("https://api.whatsapp.com/send?phone="+ph+"&text"+msg));
+                    , Uri.parse("https://api.whatsapp.com/send?phone="+ph+"&text="+msg));
 
             if (i.resolveActivity(view.getContext().getPackageManager())
                     == null) {
@@ -203,7 +95,111 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
     }
 
 
+    private void popupmenu(View view, myViewHolder holder, Users model, int position) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.txt_option);
+        popupMenu.inflate(R.menu.options_menu_paid);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()){
+                case R.id.menu_edit:
 
+                    final DialogPlus dialogPlus = DialogPlus
+                            .newDialog(holder.txt_option.getContext())
+                            .setContentHolder(new ViewHolder(R.layout.dialog_content))
+                            .setExpanded(true,900)
+                            .create();
+                    View mView = dialogPlus.getHolderView();
+
+
+                    EditText uName = mView.findViewById(R.id.uName);
+                    EditText uNo = mView.findViewById(R.id.uNo);
+                    EditText uPhno = mView.findViewById(R.id.uPhnumber);
+                    EditText fee = mView.findViewById(R.id.fees);
+                    EditText date = mView.findViewById(R.id.joiningDate);
+
+                    Button update = mView.findViewById(R.id.update);
+
+
+
+                    uName.setText(model.getuName());
+                    uNo.setText(model.getuNo());
+                    uPhno.setText(model.getuPhno());
+                    fee.setText(model.getFee());
+                    date.setText(model.getDate());
+
+
+                    dialogPlus.show();
+
+                    update.setOnClickListener(view1 -> {
+
+
+
+                        Map<String,Object> map = new HashMap<>();
+                        map.put("uName",uName.getText().toString());
+                        map.put("uNo",uNo.getText().toString());
+                        map.put("uPhno",uPhno.getText().toString());
+                        map.put("fee",fee.getText().toString());
+                        map.put("date",date.getText().toString());
+
+
+                        FirebaseDatabase.getInstance().getReference().child("users")
+                                .child(model.getuNo()+model.getuName())
+                                .updateChildren(map);
+
+                        FirebaseDatabase.getInstance().getReference().child("paid")
+                                .child((getRef(position).getKey()))
+                                .updateChildren(map)
+                                .addOnSuccessListener(runnable -> {
+                                    Toast.makeText(view.getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
+                                    dialogPlus.dismiss();
+                                }).addOnFailureListener(runnable -> {
+                                    Toast.makeText(view.getContext(), "Failed to  update", Toast.LENGTH_SHORT).show();
+                                    dialogPlus.dismiss();
+                                });
+
+
+                    });
+
+
+                    break;
+                case R.id.menu_unpay:
+                    FirebaseDatabase.getInstance().getReference().child("pending")
+                            .child(model.getuNo()+model.getuName()).setValue(model);
+
+                    FirebaseDatabase.getInstance().getReference().child("revenue")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                    String fund = snapshot.getValue(String.class);
+
+                                    int money = Integer.parseInt(fund);
+                                    int money2 = Integer.parseInt(model.getFee().toString());
+
+                                    int netMoney = money-money2;
+
+                                    FirebaseDatabase.getInstance().getReference().child("revenue")
+                                            .setValue(Integer.toString(netMoney));
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                    FirebaseDatabase.getInstance().getReference().child("paid")
+                            .child(getRef(position).getKey()).removeValue();
+                    Toast.makeText(view.getContext(), "Successfull", Toast.LENGTH_SHORT).show();
+                    break;
+
+
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
 
 
 
@@ -218,6 +214,7 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
         ImageView profileImg,callBtn,wpBtn;
         TextView uName;
         TextView uNo;
@@ -225,6 +222,8 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            cardView = itemView.findViewById(R.id.cardView);
             profileImg = itemView.findViewById(R.id.profileImage);
             uName = itemView.findViewById(R.id.uName);
             uNo = itemView.findViewById(R.id.uNo);
