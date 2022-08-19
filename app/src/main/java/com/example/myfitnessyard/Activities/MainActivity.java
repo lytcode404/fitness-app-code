@@ -37,9 +37,13 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        toolbar = findViewById(R.id.toolbar);
         funds = findViewById(R.id.funds);
         fab = findViewById(R.id.fab);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
 
         replaceFragment(new HomeFragment());
         binding.bottomNav.setOnItemSelectedListener(item -> {
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
+        final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
         View mView = getLayoutInflater().inflate(R.layout.fund_box, null);
 
         final EditText fundVal = (EditText)mView.findViewById(R.id.fundValue);
