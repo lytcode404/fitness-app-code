@@ -53,146 +53,149 @@ public class CreateUserActivity extends AppCompatActivity {
         dialog.setMessage("Creating User...");
         dialog.setCancelable(false);
 
-
-        launcher = registerForActivityResult(new ActivityResultContracts.GetContent()
-                , new ActivityResultCallback<Uri>() {
-            @Override
-            public void onActivityResult(Uri uri) {
-                if(uri != null){
-                    binding.profileImage.setImageURI(uri);
-                    selectedImage = uri;
-
-                }
-
-            }
-        });
-        binding.profileImage.setOnClickListener(view -> {
-
-            launcher.launch("image/*");
-
-        });
-
-
-
+        getImage();
 
 
         binding.submit.setOnClickListener(view -> {
-            String   uName, uNo,uPhno, feeStatus, fee, plan, date;
 
-
-            uName = binding.uName.getText().toString().trim();
-            uNo = binding.uNo.getText().toString().trim();
-            feeStatus = feeStats.getText().toString();
-            fee = binding.fees.getText().toString();
-            plan = gymPlan.getText().toString();
-
-            date = binding.joiningDate.getText().toString();
-            uPhno = binding.uPhnumber.getText().toString();
-
-
-            if (uName.isEmpty() ){
-                binding.uName.setError("Please fill the field!");
-                return;
-            }if (uNo.isEmpty() ){
-                binding.uNo.setError("Please fill the field!");
-                return;
-            }if ( fee.isEmpty() ){
-                binding.fees.setError("Please fill the field!");
-                return;
-            }if (date.isEmpty()){
-                binding.joiningDate.setError("Please fill the field!");
-                return;
-            }if (uPhno.isEmpty()){
-                binding.joiningDate.setError("Please fill the field!");
-                return;
-            }
-
-
-            if(selectedImage != null){
-                dialog.show();
-                StorageReference reference = storage.getReference().child("profiles").child(uNo+uName);
-                reference.putFile(selectedImage)
-                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()){
-                            reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String imageUrl = uri.toString();
-                                    Users users = new Users(imageUrl,uName, uNo,uPhno, feeStatus, fee, plan, date);
-                                    if(feeStatus.equals("Paid")){
-                                        database.getReference().child("paid").child(uNo+uName)
-                                                .setValue(users);
-
-                                        database.getReference().child("revenue")
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        String fund = snapshot.getValue(String.class);
-
-                                                        int money = Integer.parseInt(fund);
-                                                        int money2 = Integer.parseInt(binding.fees.getText().toString());
-
-                                                        int netMoney = money+money2;
-
-                                                        database.getReference().child("revenue")
-                                                                .setValue(Integer.toString(netMoney));
-
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                                    }
-                                                });
-                                    }else{
-                                        database.getReference().child("pending").child(uNo+uName)
-                                                .setValue(users);
-
-                                    }
-
-
-                                    database.getReference().child("users").child(uNo+uName)
-                                            .setValue(users)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    binding.uName.setText("");
-                                                    binding.uNo.setText("");
-                                                    binding.fees.setText("");
-                                                    binding.joiningDate.setText("");
-                                                    binding.profileImage.setImageResource(R.drawable.ic_baseline_person_24);
-                                                    dialog.cancel();
-                                                    Toast.makeText(CreateUserActivity.this, "task successful", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    dialog.cancel();
-                                                    Toast.makeText(CreateUserActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-
-                                                }
-                                            });
-                                }
-                            });
-                        }
-                    }
-                });
-
-            }else{
-                Toast.makeText(CreateUserActivity.this,
-                        "Please select the image", Toast.LENGTH_SHORT).show();
-            }
-
-
-
+            getInstanceViews();
 
         });
 
     }
 
+
+
+    private void getImage() {
+        launcher = registerForActivityResult(new ActivityResultContracts.GetContent()
+                , new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        if(uri != null){
+                            binding.profileImage.setImageURI(uri);
+                            selectedImage = uri;
+
+                        }
+
+                    }
+                });
+        binding.profileImage.setOnClickListener(view -> {
+
+            launcher.launch("image/*");
+
+        });
+    }
+
+    private void getInstanceViews() {
+        String   uName, uNo,uPhno, feeStatus, fee, plan, date;
+
+
+        uName = binding.uName.getText().toString().trim();
+        uNo = binding.uNo.getText().toString().trim();
+        feeStatus = feeStats.getText().toString();
+        fee = binding.fees.getText().toString();
+        plan = gymPlan.getText().toString();
+
+        date = binding.joiningDate.getText().toString();
+        uPhno = binding.uPhnumber.getText().toString();
+
+        if (uName.isEmpty() ){
+            binding.uName.setError("Please fill the field!");
+            return;
+        }if (uNo.isEmpty() ){
+            binding.uNo.setError("Please fill the field!");
+            return;
+        }if ( fee.isEmpty() ){
+            binding.fees.setError("Please fill the field!");
+            return;
+        }if (date.isEmpty()){
+            binding.joiningDate.setError("Please fill the field!");
+            return;
+        }if (uPhno.isEmpty()){
+            binding.joiningDate.setError("Please fill the field!");
+            return;
+        }
+
+
+        if(selectedImage != null){
+            dialog.show();
+            StorageReference reference = storage.getReference().child("profiles").child(uNo+uName);
+            reference.putFile(selectedImage)
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()){
+                                reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String imageUrl = uri.toString();
+                                        Users users = new Users(imageUrl,uName, uNo,uPhno, feeStatus, fee, plan, date);
+                                        if(feeStatus.equals("Paid")){
+                                            database.getReference().child("paid").child(uNo+uName)
+                                                    .setValue(users);
+
+                                            database.getReference().child("revenue")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            String fund = snapshot.getValue(String.class);
+
+                                                            int money = Integer.parseInt(fund);
+                                                            int money2 = Integer.parseInt(binding.fees.getText().toString());
+
+                                                            int netMoney = money+money2;
+
+                                                            database.getReference().child("revenue")
+                                                                    .setValue(Integer.toString(netMoney));
+
+
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                        }
+                                                    });
+                                        }else{
+                                            database.getReference().child("pending").child(uNo+uName)
+                                                    .setValue(users);
+
+                                        }
+
+
+                                        database.getReference().child("users").child(uNo+uName)
+                                                .setValue(users)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        binding.uName.setText("");
+                                                        binding.uNo.setText("");
+                                                        binding.fees.setText("");
+                                                        binding.joiningDate.setText("");
+                                                        binding.profileImage.setImageResource(R.drawable.ic_baseline_person_24);
+                                                        dialog.cancel();
+                                                        Toast.makeText(CreateUserActivity.this, "task successful", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        dialog.cancel();
+                                                        Toast.makeText(CreateUserActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                });
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+        }else{
+            Toast.makeText(CreateUserActivity.this,
+                    "Please select the image", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
 
     public void checkBtn(View view) {
