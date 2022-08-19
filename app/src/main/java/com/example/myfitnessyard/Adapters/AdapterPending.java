@@ -64,7 +64,7 @@ public class AdapterPending extends FirebaseRecyclerAdapter<Users, AdapterPendin
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                view.getContext().startActivity(new Intent(view.getContext(), CalendarActivity.class));
+                view.getContext().startActivity(new Intent(view.getContext(),CalendarActivity.class));
                 return true;
             }
         });
